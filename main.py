@@ -1,0 +1,153 @@
+import pygame
+import random
+import sys
+
+pygame.init()
+
+# ---------------- SCREEN ----------------
+info = pygame.display.Info()
+WIDTH, HEIGHT = info.current_w, info.current_h
+
+screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN)
+pygame.display.set_caption("Louage Run 🇹🇳")
+
+clock = pygame.time.Clock()
+font = pygame.font.SysFont("arial", 28, bold=True)
+
+# ---------------- LOAD IMAGES ----------------
+def load_img(path, size):
+    img = pygame.image.load(path).convert_alpha()
+    return pygame.transform.scale(img, size)
+
+louage = load_img("CatV0.2.png", (220, 130))
+police_car = load_img("CarPolicV2.png", (240, 140))
+police_moto = load_img("PolicV1.png", (200, 120))
+dinar = load_img("DinarV2.png", (60, 60))
+
+# ---------------- PLAYER ----------------
+player_x = 120
+player_y = HEIGHT // 2
+player_speed = 6
+
+# ---------------- GAME DATA ----------------
+coins = []
+obstacles = []
+score = 0
+game_over = False
+
+# Police
+police_x = -200
+police_y = player_y
+
+# ---------------- FUNCTIONS ----------------
+def spawn_coin():
+    return pygame.Rect(WIDTH, random.randint(50, HEIGHT - 80), 40, 40)
+
+def spawn_obstacle():
+    y = random.randint(50, HEIGHT - 100)
+    kind = random.choice(["car", "moto"])
+    rect = pygame.Rect(WIDTH, y, 120, 70)
+    return {"rect": rect, "type": kind}
+
+def draw_text(text, x, y, color=(0, 0, 0)):
+    img = font.render(text, True, color)
+    screen.blit(img, (x, y))
+
+def reset_game():
+    global coins, obstacles, score, police_x, player_y, game_over
+    coins = []
+    obstacles = []
+    score = 0
+    police_x = -200
+    player_y = HEIGHT // 2
+    game_over = False
+
+# ---------------- GAME LOOP ----------------
+running = True
+while running:
+    clock.tick(60)
+    screen.fill((135, 206, 235))
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+        if game_over and event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_r:
+                reset_game()
+
+    keys = pygame.key.get_pressed()
+
+    if not game_over:
+
+        # -------- PLAYER MOVEMENT --------
+        if keys[pygame.K_UP] or keys[pygame.K_w]:
+            player_y -= player_speed
+        if keys[pygame.K_DOWN] or keys[pygame.K_s]:
+            player_y += player_speed
+
+        player_y = max(0, min(player_y, HEIGHT - 80))
+        player_rect = pygame.Rect(player_x, player_y, 130, 75)
+
+        # -------- SPAWN --------
+        if random.randint(1, 60) == 1:
+            coins.append(spawn_coin())
+
+        if random.randint(1, 80) == 1:
+            obstacles.append(spawn_obstacle())
+
+        # -------- COINS --------
+        for coin in coins[:]:
+            coin.x -= 5
+            screen.blit(dinar, coin)
+
+            if player_rect.colliderect(coin):
+                score += 1
+                coins.remove(coin)
+
+            elif coin.x < -50:
+                coins.remove(coin)
+
+        # -------- OBSTACLES --------
+        for obs in obstacles[:]:
+            obs["rect"].x -= 6
+
+            if obs["type"] == "car":
+                screen.blit(police_car, obs["rect"])
+            else:
+                screen.blit(police_moto, obs["rect"])
+
+            if player_rect.colliderect(obs["rect"]):
+                game_over = True
+
+            elif obs["rect"].x < -150:
+                obstacles.remove(obs)
+
+        # -------- POLICE CHASE --------
+        if score >= 5:
+            police_x += 2
+            police_y += (player_y - police_y) * 0.05
+
+            screen.blit(police_car, (police_x, police_y))
+            police_rect = pygame.Rect(police_x, police_y, 140, 80)
+
+            if police_rect.colliderect(player_rect):
+                game_over = True
+
+        # -------- DRAW PLAYER --------
+        screen.blit(louage, (player_x, player_y))
+
+        # -------- UI --------
+        draw_text(f"Score: {score}", 20, 20)
+
+    else:
+        draw_text("💀 GAME OVER 💀", WIDTH//2 - 120, HEIGHT//2 - 40, (200, 0, 0))
+        draw_text(f"Score: {score}", WIDTH//2 - 60, HEIGHT//2)
+        draw_text("Press R to restart", WIDTH//2 - 120, HEIGHT//2 + 40)
+
+    pygame.display.update()
+
+pygame.quit()
+sys.exit()
+
+sssss
