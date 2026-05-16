@@ -3,6 +3,7 @@ import random
 import sys
 
 pygame.init()
+pygame.mixer.init()
 
 # ---------------- SCREEN ----------------
 info = pygame.display.Info()
@@ -26,6 +27,11 @@ police_car  = load_img("CarPolicV2.png", (240, 140))
 police_moto = load_img("PolicV1.png",    (200, 120))
 dinar       = load_img("DinarV2.png",    (60, 60))
 
+#Sound-------Load------------------------
+engine_sound = pygame.mixer.Sound("louage_engine.mp3")
+police_sound = pygame.mixer.Sound("police_siren.mp3")
+crash_sound = pygame.mixer.Sound("crash.mp3")
+
 # ---------------- GAME STATE ----------------
 # States: "menu"  "playing"  "game_over"  "win"
 state = "menu"
@@ -43,6 +49,7 @@ player_y     = HEIGHT // 2
 player_speed = 6
 
 # ---------------- GAME DATA ----------------
+coins     = []
 obstacles = []
 score     = 0
 game_over = False
@@ -90,6 +97,7 @@ def spawn_obstacle():
 
 def reset_game():
     
+    
     global coins, obstacles, score, game_over
     global police_x, police_y, police_active, police_timer, last_chase_score
     global player_x, player_y, state
@@ -111,6 +119,8 @@ def reset_game():
 
     level = 1
     setup_level()
+    
+    engine_sound.play(-1)
 
 
 #----Game-----Levels-------------
@@ -268,6 +278,7 @@ while running:
 
             if level == 1 and score >= 7 and last_chase_score < 4:
                 police_active = True
+                police_sound.play()
                 police_timer = 0.0
                 last_chase_score = 4
                 police_x = -300
@@ -306,6 +317,7 @@ while running:
             # Collision with player → game over
             if police_rect.colliderect(player_rect):
                 state = "game_over"
+                crash_sound.play()
 
             # Timer (seconds)
             police_timer += dt / 1000.0
@@ -353,6 +365,8 @@ while running:
 
     # ======================== GAME OVER ========================
     elif state == "game_over":
+        engine_sound.stop()
+        police_sound.stop()
         screen.fill((135, 206, 235))
         restart_btn, menu_btn = draw_game_over_screen()
         if mouse_clicked:
