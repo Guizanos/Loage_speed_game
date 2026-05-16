@@ -30,11 +30,6 @@ dinar       = load_img("DinarV2.png",    (60, 60))
 # States: "menu"  "playing"  "game_over"  "win"
 state = "menu"
 
-#--------Levels---------------
-level = 1
-WIN_SCORE = 5
-
-
 # ---------------- GAME DATA ----------------
 
 obstacle_speed = 6
@@ -48,7 +43,6 @@ player_y     = HEIGHT // 2
 player_speed = 6
 
 # ---------------- GAME DATA ----------------
-coins     = []
 obstacles = []
 score     = 0
 game_over = False
@@ -99,6 +93,9 @@ def reset_game():
     global coins, obstacles, score, game_over
     global police_x, police_y, police_active, police_timer, last_chase_score
     global player_x, player_y, state
+    
+    global level
+    
     coins             = []
     obstacles         = []
     score             = 0
@@ -126,21 +123,21 @@ def setup_level():
 
     if level == 1:
         WIN_SCORE = 10
-        obstacle_speed = 6
+        obstacle_speed = 7
         coin_speed = 5
-        police_speed = 5
+        police_speed = 7
 
     elif level == 2:
         WIN_SCORE = 20
-        obstacle_speed = 8
+        obstacle_speed = 9
         coin_speed = 6
-        police_speed = 7
+        police_speed = 8.5
 
     elif level == 3:
         WIN_SCORE = 30
-        obstacle_speed = 10
+        obstacle_speed = 11
         coin_speed = 7
-        police_speed = 9
+        police_speed = 11
 
 
 # ---------------- MAIN MENU ----------------
@@ -266,14 +263,29 @@ while running:
                 obstacles.remove(obs)
 
         # -------- POLICE CHASE CONTROL --------
-        # Activate every +10 coins (threshold: 10, 20, 30, 40…)
+        # ----------------------------------------
         if not police_active:
-            if score >= 10 and (score // 10) > (last_chase_score // 10):
-                police_active    = True
-                police_timer     = 0.0
-                last_chase_score = score
-                police_x         = -300          # enter from left
-                police_y         = float(player_y)
+
+            if level == 1 and score >= 7 and last_chase_score < 4:
+                police_active = True
+                police_timer = 0.0
+                last_chase_score = 4
+                police_x = -300
+                police_y = float(player_y)
+
+            elif level == 2 and score >= 13 and last_chase_score < 13:
+                police_active = True
+                police_timer = 0.0
+                last_chase_score = 13
+                police_x = -300
+                police_y = float(player_y)
+
+            elif level == 3 and score >= 13 and last_chase_score < 14:
+                police_active = True
+                police_timer = 0.0
+                last_chase_score = 14
+                police_x = -300
+                police_y = float(player_y)
 
         if police_active:
             # Move toward player
