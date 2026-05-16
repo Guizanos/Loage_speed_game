@@ -30,7 +30,17 @@ dinar       = load_img("DinarV2.png",    (60, 60))
 # States: "menu"  "playing"  "game_over"  "win"
 state = "menu"
 
-WIN_SCORE = 50  # coins needed to win
+#--------Levels---------------
+level = 1
+WIN_SCORE = 5
+
+
+# ---------------- GAME DATA ----------------
+
+obstacle_speed = 6
+coin_speed = 5
+police_speed = 5
+
 
 # ---------------- PLAYER ----------------
 player_x     = 120
@@ -85,6 +95,7 @@ def spawn_obstacle():
     return {"rect": rect, "type": kind}
 
 def reset_game():
+    
     global coins, obstacles, score, game_over
     global police_x, police_y, police_active, police_timer, last_chase_score
     global player_x, player_y, state
@@ -101,13 +112,44 @@ def reset_game():
     player_y          = HEIGHT // 2
     state             = "playing"
 
+    level = 1
+    setup_level()
+
+
+#----Game-----Levels-------------
+
+def setup_level():
+    global WIN_SCORE
+    global obstacle_speed
+    global coin_speed
+    global police_speed
+
+    if level == 1:
+        WIN_SCORE = 10
+        obstacle_speed = 6
+        coin_speed = 5
+        police_speed = 5
+
+    elif level == 2:
+        WIN_SCORE = 20
+        obstacle_speed = 8
+        coin_speed = 6
+        police_speed = 7
+
+    elif level == 3:
+        WIN_SCORE = 30
+        obstacle_speed = 10
+        coin_speed = 7
+        police_speed = 9
+
+
 # ---------------- MAIN MENU ----------------
 def draw_menu(mouse_pos):
     screen.fill((15, 20, 45))
     # Title
     draw_text_center("🇹🇳  LOUAGE RUN  🇹🇳", HEIGHT // 2 - 130,
                      color=(255, 220, 60), fnt=font_large)
-    draw_text_center("Collect 20 coins to win the round!", HEIGHT // 2 - 50,
+    draw_text_center("Complete all 3 levels to win!", HEIGHT // 2 - 50,
                      color=(200, 200, 200))
     draw_text_center("Use Arrow Keys or WASD to move", HEIGHT // 2 - 10,
                      color=(170, 170, 170))
@@ -203,7 +245,7 @@ while running:
 
         # -------- COINS --------
         for coin in coins[:]:
-            coin.x -= 5
+            coin.x -= coin_speed
             screen.blit(dinar, coin)
             if player_rect.colliderect(coin):
                 score += 1
@@ -213,7 +255,7 @@ while running:
 
         # -------- OBSTACLES --------
         for obs in obstacles[:]:
-            obs["rect"].x -= 6
+            obs["rect"].x -=  obstacle_speed
             if obs["type"] == "car":
                 screen.blit(police_car, obs["rect"])
             else:
@@ -235,7 +277,7 @@ while running:
 
         if police_active:
             # Move toward player
-            police_x   += 5
+            police_x   += police_speed
             police_y   += (player_y - police_y) * 0.1
             police_rect = pygame.Rect(int(police_x), int(police_y), 140, 80)
 
@@ -263,14 +305,29 @@ while running:
         screen.blit(louage, (player_x, player_y))
 
         # -------- UI --------
-        draw_text(f"Score: {score} / {WIN_SCORE}", 20, 20, color=(0, 0, 0))
+        draw_text(f"Level: {level}", 20, 20, color=(0, 0, 0))
+        draw_text(f"Score: {score} / {WIN_SCORE}", 20, 60, color=(0, 0, 0))
+        
         if police_active:
             draw_text("⚠ POLICE CHASE ⚠", WIDTH // 2 - 130, 20, color=(200, 0, 0))
 
         # -------- WIN CHECK --------
         if score >= WIN_SCORE:
-            state = "win"
 
+            if level < 3:
+
+                level += 1
+
+                coins.clear()
+                obstacles.clear()
+
+                player_x = 120
+                player_y = HEIGHT // 2
+
+                setup_level()
+
+            else:
+                state = "win"
     # ======================== WIN ========================
     elif state == "win":
         # Keep the game world visible behind overlay
