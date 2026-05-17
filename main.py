@@ -137,7 +137,7 @@ def reset_game():
     obstacles = []
     score = 0
 
-    
+    #variable ----------------------------
     
     police_x = -300
     police_y = float(HEIGHT // 2)
@@ -297,7 +297,7 @@ while running:
             elif obs["type"] == "moto":
                 screen.blit(police_moto, obs["rect"])
             elif obs["type"] == "barrier":
-                screen.blit(truck, obs["rect"])
+                screen.blit(barrier, obs["rect"])
 
             if player_rect.colliderect(obs["rect"]):
                 crash_sound.play()
