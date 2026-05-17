@@ -94,14 +94,18 @@ def make_button(text, cx, cy, w=280, h=55, fnt=None):
                         rect.centery - label.get_height() // 2))
     return rect
 
+
+    #------coin----spawn---
 def spawn_coin():
-    return pygame.Rect(WIDTH, random.randint(50, HEIGHT - 80), 40, 40)
+    return pygame.Rect(WIDTH, random.randint(50, HEIGHT - 80), 40, 40)  #--50 and 80 too much to top or down---
 
 def spawn_obstacle():
     y = random.randint(50, HEIGHT - 100)
     kind = random.choice(["car", "moto","barrier"])
     rect = pygame.Rect(WIDTH, y, 120, 70)
     return {"rect": rect, "type": kind}
+
+    #lvls--------Flow-lvl-1 ---> lvl-2 --------------
 
 def setup_level():
     global WIN_SCORE
@@ -220,7 +224,7 @@ def draw_game_over_screen():
 running = True
 
 while running:
-    dt = clock.tick(60)
+    timer = clock.tick(60)   #-f-60
 
     mouse_pos = pygame.mouse.get_pos()
     mouse_clicked = False
@@ -289,7 +293,7 @@ while running:
                 coins.remove(coin)
 
         # -------- OBSTACLES --------
-        for obs in obstacles[:]:
+        for obs in obstacles[:]:   #------------- --:  --do a copy we remv so no prblms--------
             obs["rect"].x -= obstacle_speed
 
             if obs["type"] == "car":
@@ -297,7 +301,7 @@ while running:
             elif obs["type"] == "moto":
                 screen.blit(police_moto, obs["rect"])
             elif obs["type"] == "barrier":
-                screen.blit(barrier, obs["rect"])
+                screen.blit(barrier, obs["rect"])# 
 
             if player_rect.colliderect(obs["rect"]):
                 crash_sound.play()
@@ -339,10 +343,11 @@ while running:
 
             police_rect = pygame.Rect(int(police_x), int(police_y), 140, 80)
 
+                
             for obs in obstacles[:]:
                 if police_rect.colliderect(obs["rect"]):
                     police_active = False
-                    police_sound.stop()
+                    police_sound.stop()     #---pol-vs-obs-break
                     police_x = -300
                     break
 
@@ -352,7 +357,7 @@ while running:
                 crash_sound.play()
                 state = "game_over"
 
-            police_timer += dt/1000.0
+            police_timer += timer/1000.0  #------frame-set--60---add by 0.016ss
 
             if police_timer >= 10:
                 police_active = False
