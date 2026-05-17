@@ -26,6 +26,7 @@ louage      = load_img("CatV0.2.png",    (220, 130))
 police_car  = load_img("CarPolicV2.png", (240, 140))
 police_moto = load_img("PolicV1.png",    (200, 120))
 dinar       = load_img("DinarV2.png",    (60, 60))
+barrier     = load_img("barrier.png", (260, 150))
 
 # ---------------- LOAD SOUNDS ----------------
 engine_sound = pygame.mixer.Sound("louage_engine.mp3")
@@ -98,7 +99,7 @@ def spawn_coin():
 
 def spawn_obstacle():
     y = random.randint(50, HEIGHT - 100)
-    kind = random.choice(["car", "moto"])
+    kind = random.choice(["car", "moto","barrier"])
     rect = pygame.Rect(WIDTH, y, 120, 70)
     return {"rect": rect, "type": kind}
 
@@ -291,8 +292,10 @@ while running:
 
             if obs["type"] == "car":
                 screen.blit(police_car, obs["rect"])
-            else:
+            elif obs["type"] == "moto":
                 screen.blit(police_moto, obs["rect"])
+            elif obs["type"] == "barrier":
+                screen.blit(barrier, obs["rect"])
 
             if player_rect.colliderect(obs["rect"]):
                 crash_sound.play()
