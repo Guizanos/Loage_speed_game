@@ -1,3 +1,4 @@
+# pyrefly: ignore [missing-import]
 import pygame
 import random
 import sys
@@ -33,6 +34,8 @@ engine_sound = pygame.mixer.Sound("louage_engine.mp3")
 police_sound = pygame.mixer.Sound("police_siren.mp3")
 crash_sound  = pygame.mixer.Sound("crash.mp3")
 bg_sound = pygame.mixer.Sound("bg.wav")
+levelup_sound = pygame.mixer.Sound("levelUp.wav")
+levelup_sound.set_volume(0.5)
 
 
 engine_sound.set_volume(0.2)
@@ -45,7 +48,7 @@ bg_sound.play(-1)
 state = "menu"
 
 level = 1
-WIN_SCORE = 10
+WIN_SCORE = 20
 
 obstacle_speed = 6
 coin_speed = 5
@@ -110,19 +113,19 @@ def setup_level():
     global police_speed
 
     if level == 1:
-        WIN_SCORE = 10
+        WIN_SCORE = 20
         obstacle_speed = 7
         coin_speed = 5
         police_speed = 7
 
     elif level == 2:
-        WIN_SCORE = 20
+        WIN_SCORE = 40
         obstacle_speed = 9
         coin_speed = 6
         police_speed = 8.5
 
     elif level == 3:
-        WIN_SCORE = 30
+        WIN_SCORE = 60
         obstacle_speed = 11
         coin_speed = 7
         police_speed = 11
@@ -186,15 +189,15 @@ def draw_win_screen(mouse_pos):
     overlay.fill((10, 40, 10, 210))
     screen.blit(overlay, (0, 0))
 
-    draw_text_center("🏆  YOU WIN!  🏆", HEIGHT // 2 - 130,
+    draw_text_center("YOU WIN!", HEIGHT // 2 - 130,
                      color=(255, 230, 50), fnt=font_large)
     draw_text_center(f"Final Score: {score}", HEIGHT // 2 - 50,
                      color=(255, 255, 255), fnt=font_med)
     draw_text_center("You completed all levels!", HEIGHT // 2,
                      color=(180, 255, 180))
 
-    restart_btn = make_button("🔄  Restart Game", WIDTH // 2, HEIGHT // 2 + 90)
-    menu_btn    = make_button("🏠  Main Menu",    WIDTH // 2, HEIGHT // 2 + 160)
+    restart_btn = make_button("Restart Game", WIDTH // 2, HEIGHT // 2 + 90)
+    menu_btn    = make_button("Main Menu",    WIDTH // 2, HEIGHT // 2 + 160)
 
     return restart_btn, menu_btn
 
@@ -204,13 +207,13 @@ def draw_game_over_screen():
     overlay.fill((40, 10, 10, 210))
     screen.blit(overlay, (0, 0))
 
-    draw_text_center("💀  GAME OVER  💀", HEIGHT // 2 - 120,
+    draw_text_center("GAME OVER", HEIGHT // 2 - 120,
                      color=(220, 50, 50), fnt=font_large)
     draw_text_center(f"Score: {score}", HEIGHT // 2 - 40,
                      color=(255, 255, 255), fnt=font_med)
 
-    restart_btn = make_button("🔄  Restart Game", WIDTH // 2, HEIGHT // 2 + 50)
-    menu_btn    = make_button("🏠  Main Menu",    WIDTH // 2, HEIGHT // 2 + 120)
+    restart_btn = make_button("Restart Game", WIDTH // 2, HEIGHT // 2 + 50)
+    menu_btn    = make_button("Main Menu",    WIDTH // 2, HEIGHT // 2 + 120)
 
     return restart_btn, menu_btn
 
@@ -297,7 +300,7 @@ while running:
             elif obs["type"] == "moto":
                 screen.blit(police_moto, obs["rect"])
             elif obs["type"] == "barrier":
-                screen.blit(truck, obs["rect"])
+                screen.blit(barrier, obs["rect"])
 
             if player_rect.colliderect(obs["rect"]):
                 crash_sound.play()
@@ -309,27 +312,27 @@ while running:
         # -------- POLICE CHASE CONTROL --------
         if not police_active:
 
-            if level == 1 and score >= 7 and last_chase_score < 7:
+            if level == 1 and score >= 10 and last_chase_score < 10:
                 police_active = True
                 police_sound.play()
                 police_timer = 0.0
-                last_chase_score = 7
+                last_chase_score = 10
                 police_x = -300
                 police_y = float(player_y)
 
-            elif level == 2 and score >= 13 and last_chase_score < 13:
+            elif level == 2 and score >= 30 and last_chase_score < 30:
                 police_active = True
                 police_sound.play()
                 police_timer = 0.0
-                last_chase_score = 13
+                last_chase_score = 30
                 police_x = -300
                 police_y = float(player_y)
 
-            elif level == 3 and score >= 13 and last_chase_score < 13:
+            elif level == 3 and score >= 50 and last_chase_score < 50:
                 police_active = True
                 police_sound.play()
                 police_timer = 0.0
-                last_chase_score = 13
+                last_chase_score = 50
                 police_x = -300
                 police_y = float(player_y)
 
@@ -363,8 +366,8 @@ while running:
         screen.blit(louage, (player_x, player_y))
 
         # -------- UI --------
-        draw_text(f"Level: {level}", 20, 20, color=(0, 0, 0))
-        draw_text(f"Score: {score} / {WIN_SCORE}", 20, 60, color=(0, 0, 0))
+        draw_text_center(f"Level: {level}", 20, color=(0, 0, 0), fnt=font_med)
+        draw_text(f"Score: {score} / {WIN_SCORE}", 20, 20, color=(0, 0, 0))
 
         if police_active:
             draw_text("⚠ POLICE CHASE ⚠", WIDTH // 2 - 130, 20, color=(200, 0, 0))
@@ -374,6 +377,7 @@ while running:
 
             if level < 3:
                 level += 1
+                levelup_sound.play()
 
                 coins.clear()
                 obstacles.clear()
