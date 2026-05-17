@@ -270,10 +270,10 @@ while running:
         player_rect = pygame.Rect(player_x, player_y, 130, 75)
 
         # -------- SPAWN --------
-        if random.randint(1, 60) == 1:
+        if random.randint(1, 60) == 1:  #--------------if == 1 spawn coin---------
             coins.append(spawn_coin())
 
-        if random.randint(1, 80) == 1:
+        if random.randint(1, 70) == 1:
             obstacles.append(spawn_obstacle())
 
         # -------- COINS --------
