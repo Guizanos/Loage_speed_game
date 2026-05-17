@@ -31,6 +31,14 @@ dinar       = load_img("DinarV2.png",    (60, 60))
 engine_sound = pygame.mixer.Sound("louage_engine.mp3")
 police_sound = pygame.mixer.Sound("police_siren.mp3")
 crash_sound  = pygame.mixer.Sound("crash.mp3")
+bg_sound = pygame.mixer.Sound("bg.wav")
+
+
+engine_sound.set_volume(0.2)
+police_sound.set_volume(0.3)
+crash_sound.set_volume(0.4)
+bg_sound.set_volume(0.15)
+bg_sound.play(-1)
 
 # ---------------- GAME STATE ----------------
 state = "menu"
@@ -146,22 +154,28 @@ def reset_game():
     engine_sound.play(-1)
 
 # ---------------- MAIN MENU ----------------
-def draw_menu(mouse_pos):
-    screen.fill((15, 20, 45))
+# ---------------- MENU ----------------
+bg = pygame.image.load("bg_menu.jpeg")
+bg = pygame.transform.scale(bg, (WIDTH, HEIGHT))
 
-    draw_text_center("🇹🇳  LOUAGE RUN  🇹🇳", HEIGHT // 2 - 130,
-                     color=(255, 220, 60), fnt=font_large)
-    draw_text_center("Complete all 3 levels to win!", HEIGHT // 2 - 50,
-                     color=(200, 200, 200))
-    draw_text_center("Use Arrow Keys or WASD to move", HEIGHT // 2 - 10,
-                     color=(170, 170, 170))
-    draw_text_center("Avoid obstacles & police cars", HEIGHT // 2 + 30,
-                     color=(170, 170, 170))
+play_btn_img = pygame.image.load("commencer.png")
+play_btn_img = pygame.transform.scale(play_btn_img, (300, 110))
 
-    play_btn = make_button("▶  Play", WIDTH // 2, HEIGHT // 2 + 110)
-    quit_btn = make_button("✕  Quit", WIDTH // 2, HEIGHT // 2 + 180)
+quit_btn_img = pygame.image.load("quitter.png")
+quit_btn_img = pygame.transform.scale(quit_btn_img, (300, 110))
 
-    return play_btn, quit_btn
+play_rect = play_btn_img.get_rect(topleft=(WIDTH // 2 - 150, HEIGHT // 2 + 50))
+quit_rect = quit_btn_img.get_rect(topleft=(WIDTH // 2 - 150, HEIGHT // 2 + 190))
+# ---------------- MAIN MENU ----------------
+def draw_menu():
+
+    screen.blit(bg, (0, 0))
+
+    screen.blit(play_btn_img, play_rect)
+    screen.blit(quit_btn_img, quit_rect)
+
+    return play_rect, quit_rect
+
 
 # ---------------- WIN SCREEN ----------------
 def draw_win_screen(mouse_pos):
@@ -221,10 +235,11 @@ while running:
 
     # ======================== MENU ========================
     if state == "menu":
-        play_btn, quit_btn = draw_menu(mouse_pos)
+        play_btn, quit_btn = draw_menu()
 
         if mouse_clicked:
             if play_btn.collidepoint(mouse_pos):
+                bg_sound.stop()
                 reset_game()
 
             elif quit_btn.collidepoint(mouse_pos):
@@ -384,6 +399,7 @@ while running:
                 reset_game()
 
             elif menu_btn.collidepoint(mouse_pos):
+                bg_sound.play(-1)
                 state = "menu"
 
     # ======================== GAME OVER ========================
