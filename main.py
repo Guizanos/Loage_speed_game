@@ -221,6 +221,7 @@ def draw_game_over_screen():
 # GAME LOOP
 # ============================================================
 running = True
+typed_code = ""
 
 while running:
     dt = clock.tick(60)
@@ -232,9 +233,17 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
+        #======================cheat code========================
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 running = False
+            if state == "playing":
+                typed_code += event.unicode
+                if len(typed_code) > 20:
+                    typed_code = typed_code[-20:]
+                if "rayen" in typed_code.lower():
+                    score += 5
+                    typed_code = ""
 
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             mouse_clicked = True
@@ -346,6 +355,7 @@ while running:
                 if police_rect.colliderect(obs["rect"]):
                     police_active = False
                     police_sound.stop()
+                    crash_sound.play()
                     police_x = -300
                     break
 
@@ -360,6 +370,7 @@ while running:
             if police_timer >= 5:
                 police_active = False
                 police_sound.stop()
+                crash_sound.play()
                 police_x = -300
 
         # -------- DRAW PLAYER --------
@@ -370,7 +381,7 @@ while running:
         draw_text(f"Score: {score} / {WIN_SCORE}", 20, 20, color=(0, 0, 0))
 
         if police_active:
-            draw_text("⚠ POLICE CHASE ⚠", WIDTH // 2 - 130, 20, color=(200, 0, 0))
+            draw_text("POLICE CHASE", WIDTH // 2 - 130, 20, color=(200, 0, 0))
 
         # -------- LEVEL / WIN CHECK --------
         if score >= WIN_SCORE:
