@@ -310,7 +310,7 @@ while running:
         if not police_active:
 
             if level == 1 and score >= 7 and last_chase_score < 7:
-                police_active = True
+                police_active = False
                 police_sound.play()
                 police_timer = 0.0
                 last_chase_score = 7
