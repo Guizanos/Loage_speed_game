@@ -289,8 +289,8 @@ while running:
                 coins.remove(coin)
 
         # -------- OBSTACLES --------
-        for obs in obstacles[:]:
-            obs["rect"].x -= obstacle_speed
+        for obs in obstacles[:]:       #--------
+            obs["rect"].x -= obstacle_speed    #--move X
 
             if obs["type"] == "car":
                 screen.blit(police_car, obs["rect"])
@@ -299,7 +299,7 @@ while running:
             elif obs["type"] == "barrier":
                 screen.blit(barrier, obs["rect"])
 
-            if player_rect.colliderect(obs["rect"]):
+            if player_rect.colliderect(obs["rect"]): #------ if p touch ob------
                 crash_sound.play()
                 state = "game_over"
 
