@@ -310,7 +310,7 @@ while running:
         if not police_active:
 
             if level == 1 and score >= 7 and last_chase_score < 7:
-                police_active = False
+                police_active = True
                 police_sound.play()
                 police_timer = 0.0
                 last_chase_score = 7
@@ -325,11 +325,11 @@ while running:
                 police_x = -300
                 police_y = float(player_y)
 
-            elif level == 3 and score >= 13 and last_chase_score < 13:
+            elif level == 3 and score >= 12 and last_chase_score < 12:
                 police_active = True
                 police_sound.play()
                 police_timer = 0.0
-                last_chase_score = 13
+                last_chase_score = 12
                 police_x = -300
                 police_y = float(player_y)
 
@@ -352,9 +352,9 @@ while running:
                 crash_sound.play()
                 state = "game_over"
 
-            police_timer += dt / 1000.0
+            police_timer += dt/1000.0
 
-            if police_timer >= 5:
+            if police_timer >= 10:
                 police_active = False
                 police_sound.stop()
                 police_x = -300
